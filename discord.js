@@ -91,51 +91,6 @@ module.exports.plugin = (bot) => {
         console.log("Logged in as: "+client.user.tag);
     });
 
-	bot.once('spawn', function () {
-		setInterval(() =>{
-			const channel = client.channels.cache.get(process.env.playerListChannel);
-			var playerList = Object.keys(bot.players)
-			console.log(playerList)
-			let currentDate = new Date
-			var playersStr = ""
-			var namesFields = []
-			playerList.forEach((item ,i , arr) => {
-				item = cleanMarkdown(item)
-				if(i % 2 == 0)
-				{
-					playersStr = playersStr + "**" + item + "**"
-				}
-				else
-				{
-					playersStr += item
-				}
-				if(playerList.length -1 != i)
-				{	
-					playersStr += ", "
-				}
-			})
-			console.log(namesFields)
-
-			var playersEmbed = new Discord.MessageEmbed()
-				.setColor(0x00989b)
-				.setTitle("Player List")
-				.setDescription(playersStr)
-				.addFields(
-					{ name : "Player Count", value : playerList.length },
-					{ name : "TPS", value : bot.getTps() }
-				)
-				.setFooter("Last Updated")
-				.setTimestamp()
-
-			channel.messages.fetch("1083369467817500672")
-			.then(message => message.edit({ embed: playersEmbed}))
-			//channel.send({ embed:playersEmbed })
-		}, 10000)
-	})
-
-	bot.on('playerJoined', function (player) {
-	})
-
     // when a message is sent to minecraft
     bot.on('chat', function (username, message, translate, jsonMsg, matches) {
         const channel = client.channels.cache.get(process.env.discordChannel);
@@ -267,45 +222,10 @@ module.exports.plugin = (bot) => {
 
     // when a message is sent to discord
     client.on("message", msg => {
-        // ignore message not in the correct channel
-        if(msg.channel.id !== process.env.discordChannel) 
-	{
-        	if(msg.channel.id == process.env.discordAdminChannel) 
-		{
-			bot.chat((msg.content).slice(0,239));
-			msg.react("<:verified:1073358388676792390>")
-			//msg.delete()
-			return;
-		}
-		else
-		{
-			return;
-		}
-	}
         // ignore the bot's own messages
         if(msg.author.id === client.user.id) return;
-        // if message starts with the prefix, don't show the username so discord users can use commands
-        if(msg.content.startsWith(process.env.discordPrefix)){
-            // anon command
-            if(msg.content.startsWith(process.env.discordPrefix+"a ")){
-		if (process.env.admins.includes(msg.author.id))
-		{
-	                bot.chat(msg.content.substr(3));
-		} 
-		else 
-		{ 
-			return 
-		}
-            } else if(msg.content.startsWith(process.env.discordPrefix+"w ")) {
-                var msgargs = msg.content.substr(1).split(" ")
-                bot.chat("/w "+ msgargs[1]+msg.content.substr(msgargs[1].length + 3))
-            } else {
-                bot.chat(msg.content);
-            }
-        } else {
-            bot.chat((msg.author.tag+": "+msg.content).slice(0,239));
-	    return;
-        }
-        console.log((msg.author.tag+": "+msg.content).slice(0,239));
+        
+        bot.chat((msg.author.tag+": "+msg.content).slice(0,239));
+	return;
     });   
 }
